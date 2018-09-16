@@ -1,8 +1,8 @@
 import Vue from 'vue'
-import Root from './Root.vue'
+import Chat from './Chat.vue'
 
 Vue.config.productionTip = false
 
 new Vue({
-  render: h => h(Root)
+  render: h => h(Chat)
 }).$mount('#app')
