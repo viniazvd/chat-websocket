@@ -11,12 +11,9 @@ export default {
 
         Vue.prototype.$socket = socket
 
-        // objeto dos sockets registrados
         const sockets = this.$options['sockets']
 
         if (sockets) {
-          // cria um objeto Proxy e algumas traps
-          // this.$options.sockets = Proxy{}
           this.$options.sockets = new Proxy({}, {
             set: (obj, key, callback) => {
               this.listeners = [
@@ -31,8 +28,6 @@ export default {
             deleteProperty: (target, event) => Reflect.deleteProperty(target, event)
           })
 
-          // registra todos os objetos de socket para o Proxy
-          // this.$options.sockets = Proxy{ fn1: ƒ, fn2: ƒ, ... }
           Object.keys(sockets).forEach(key => (this.$options.sockets[key] = sockets[key]))
         }
       },

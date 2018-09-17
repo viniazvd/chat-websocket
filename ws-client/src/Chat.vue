@@ -53,16 +53,13 @@ export default {
     sendMessage () {
       const payload = { user: this.user, message: this.message }
 
-      // emite um evento para o backend
       this.$socket.emit('SEND_MESSAGE', payload)
 
-      // reseta o campo após enviar a mensagem
       this.message = ''
     }
   },
 
   mounted () {
-    // emite um evento para o backend
     this.$socket.emit('CONNECT')
   }
 }
