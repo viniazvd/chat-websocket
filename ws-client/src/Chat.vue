@@ -45,7 +45,7 @@ export default {
     },
 
     NEW_MESSAGE (msg) {
-      this.messages = [ ...this.message, msg ]
+      this.messages = [ ...this.messages, msg ]
     }
   },
 

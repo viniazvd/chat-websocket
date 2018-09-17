@@ -1,12 +1,5 @@
 import io from 'socket.io-client'
 
-function emit (event, payload) {
-  console.log(event, payload)
-  const listener = this.listeners.find(listener => event === listener.key)
-
-  if (listener && listener.callback) listener.callback.call(this, payload)
-}
-
 export default {
   install (Vue, connection) {
     if (!connection) throw new Error('[vue-coe-websocket] cannot locate connection')
@@ -14,7 +7,7 @@ export default {
     Vue.mixin({
       created () {
         const socket = io(connection)
-        socket.onevent = packet => emit.apply(this, packet.data)
+        socket.onevent = packet => this.emit(packet.data)
 
         Vue.prototype.$socket = socket
 
@@ -22,20 +15,20 @@ export default {
 
         if (sockets) {
           this.$options.sockets = new Proxy({}, {
-            set: (obj, key, callback) => {
+            set: (obj, event, callback) => {
               this.listeners = [
                 ...this.listeners,
-                { key, callback }
+                { event, callback }
               ]
 
-              return Reflect.set(obj, key, callback)
+              return Reflect.set(obj, event, callback)
             },
 
             // fix later
             deleteProperty: (target, event) => Reflect.deleteProperty(target, event)
           })
 
-          Object.keys(sockets).forEach(key => (this.$options.sockets[key] = sockets[key]))
+          Object.keys(sockets).forEach(event => (this.$options.sockets[event] = sockets[event]))
         }
       },
 
@@ -45,17 +38,17 @@ export default {
         }
       },
 
-      // methods: {
-      //   emit ([ event, payload ]) {
-      //     const listener = this.listeners.find(listener => event === listener.key)
+      methods: {
+        emit ([ event, payload ]) {
+          const listener = this.listeners.find(listener => event === listener.event)
 
-      //     if (listener && listener.callback) listener.callback.call(this, payload)
-      //   }
-      // },
+          if (listener && listener.callback) listener.callback.call(this, payload)
+        }
+      },
 
       beforeDestroy () {
         if (this.$options['sockets']) {
-          Object.keys(this.$options['sockets']).forEach(key => delete this.$options.sockets[key])
+          Object.keys(this.$options['sockets']).forEach(event => delete this.$options.sockets[event])
         }
       }
     })

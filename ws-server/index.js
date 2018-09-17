@@ -23,6 +23,8 @@ socket.on('connection', chat => {
     // manipula os dados do frontend, no caso, um simples log no console
     log(payload)
 
+    console.log('payload', payload)
+
     // emite uma msg de volta para o frontend, no caso, o mesmo dado que foi recebido
     socket.emit('NEW_MESSAGE', payload)
   })
