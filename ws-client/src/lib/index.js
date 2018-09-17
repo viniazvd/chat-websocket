@@ -1,5 +1,12 @@
 import io from 'socket.io-client'
 
+function emit (event, payload) {
+  console.log(event, payload)
+  const listener = this.listeners.find(listener => event === listener.key)
+
+  if (listener && listener.callback) listener.callback.call(this, payload)
+}
+
 export default {
   install (Vue, connection) {
     if (!connection) throw new Error('[vue-coe-websocket] cannot locate connection')
@@ -7,7 +14,7 @@ export default {
     Vue.mixin({
       created () {
         const socket = io(connection)
-        socket.onevent = packet => this.emit(packet.data)
+        socket.onevent = packet => emit.apply(this, packet.data)
 
         Vue.prototype.$socket = socket
 
@@ -38,13 +45,13 @@ export default {
         }
       },
 
-      methods: {
-        emit ([ event, payload ]) {
-          const listener = this.listeners.find(listener => event === listener.key)
+      // methods: {
+      //   emit ([ event, payload ]) {
+      //     const listener = this.listeners.find(listener => event === listener.key)
 
-          if (listener && listener.callback) listener.callback.call(this, payload)
-        }
-      },
+      //     if (listener && listener.callback) listener.callback.call(this, payload)
+      //   }
+      // },
 
       beforeDestroy () {
         if (this.$options['sockets']) {
