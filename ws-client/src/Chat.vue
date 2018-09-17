@@ -26,15 +26,26 @@
 </template>
 
 <script>
-import io from 'socket.io-client'
-
 export default {
   data () {
     return {
       user: '',
       message: '',
-      messages: [],
-      socket: io('localhost:3001')
+      messages: []
+    }
+  },
+
+  sockets: {
+    IS_CONNECTED (status) {
+      if (status === 'connected') {
+        console.log('ws is: ', status)
+      } else {
+        console.warn('you are not connected')
+      }
+    },
+
+    NEW_MESSAGE (msg) {
+      this.messages = [ ...this.message, msg ]
     }
   },
 
@@ -43,7 +54,7 @@ export default {
       const payload = { user: this.user, message: this.message }
 
       // emite um evento para o backend
-      this.socket.emit('SEND_MESSAGE', payload)
+      this.$socket.emit('SEND_MESSAGE', payload)
 
       // reseta o campo após enviar a mensagem
       this.message = ''
@@ -51,10 +62,8 @@ export default {
   },
 
   mounted () {
-    // adiciona uma escuta
-    this.socket.on('MESSAGE', msg => {
-      this.messages = [...this.messages, msg]
-    })
+    // emite um evento para o backend
+    this.$socket.emit('CONNECT')
   }
 }
 </script>
