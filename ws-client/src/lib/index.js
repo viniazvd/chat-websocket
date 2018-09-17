@@ -1,7 +1,5 @@
 import io from 'socket.io-client'
 
-// import Emitter from './Emitter'
-
 export default {
   install (Vue, connection) {
     if (!connection) throw new Error('[vue-coe-websocket] cannot locate connection')
