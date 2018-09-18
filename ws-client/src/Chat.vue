@@ -27,6 +27,8 @@
 
 <script>
 export default {
+  name: 'chat',
+
   data () {
     return {
       user: '',
@@ -35,17 +37,21 @@ export default {
     }
   },
 
-  sockets: {
-    IS_CONNECTED (status) {
-      if (status === 'connected') {
-        console.log('ws is: ', status)
-      } else {
-        console.warn('you are not connected')
-      }
-    },
+  socket: {
+    channel: '/main',
 
-    NEW_MESSAGE (msg) {
-      this.messages = [ ...this.messages, msg ]
+    events: {
+      IS_CONNECTED (status) {
+        if (status === 'connected') {
+          console.log('ws is: ', status)
+        } else {
+          console.warn('you are not connected')
+        }
+      },
+
+      NEW_MESSAGE (msg) {
+        this.messages = [ ...this.messages, msg ]
+      }
     }
   },
 

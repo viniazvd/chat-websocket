@@ -4,6 +4,7 @@ const app = express()
 const server = app.listen(4000)
 
 const socket = require('socket.io')(server)
+const channel = socket.of('/main')
 
 function log ({ user, message }) {
   console.log('Log message:')
@@ -11,21 +12,15 @@ function log ({ user, message }) {
   console.log()
 }
 
-// aguardando alguém conectar
-socket.on('connection', chat => {
+channel.on('connection', chat => {
 
   chat.on('CONNECT', () => {
-    socket.emit('IS_CONNECTED', 'connected')
+    channel.emit('IS_CONNECTED', 'connected')
   })
 
-  // aguardando alguém enviar uma mensagem
   chat.on('SEND_MESSAGE', payload => {
-    // manipula os dados do frontend, no caso, um simples log no console
     log(payload)
 
-    console.log('payload', payload)
-
-    // emite uma msg de volta para o frontend, no caso, o mesmo dado que foi recebido
-    socket.emit('NEW_MESSAGE', payload)
+    channel.emit('NEW_MESSAGE', payload)
   })
 })
