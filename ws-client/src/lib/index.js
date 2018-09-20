@@ -19,7 +19,9 @@ export default {
 
           if (events) {
             // callback = events[event]
-            Object.keys(events).forEach(event => λ.$socket.on(event, events[event].bind(this)))
+            const addListener = event => λ.$socket.on(event, events[event].bind(this))
+
+            Object.keys(events).forEach(addListener)
           }
         }
       }
